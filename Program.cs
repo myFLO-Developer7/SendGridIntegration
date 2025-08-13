@@ -6,7 +6,7 @@ using System.Data;
 
 class Program
 {
-    static async void Main(string[] args)
+    static async Task Main(string[] args)
     {
         try
         {
@@ -29,7 +29,8 @@ class Program
                 if (command == "Test")
                 {
                     DataTable dt = await database.GetData("SELECT * FROM dRegisteredUsers WHERE regUserID = 194", new List<SqlParameter>() { });
-                    Console.WriteLine(dt.Rows[0].ToString());
+                    Console.WriteLine(dt.Rows[0]["regFullName"].ToString());
+
                 }
                 else
                 {
