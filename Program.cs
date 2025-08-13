@@ -25,12 +25,25 @@ class Program
                 SqlServer wrapperDatabase = new SqlServer();
                 DbSettings dbSettings = wrapperDatabase.GetDbSettingsFromWrapper(systemId, dbServer);
                 SqlServer database = new SqlServer(dbSettings);
+                // CONNECTED TO WRAPPER!!
                 var command = args[0];
-                if (command == "Test")
+                if (command == "SendEmail")
                 {
-                    DataTable dt = await database.GetData("SELECT * FROM dRegisteredUsers WHERE regUserID = 194", new List<SqlParameter>() { });
-                    Console.WriteLine(dt.Rows[0]["regFullName"].ToString());
+                    DataTable dtCompanies = await database.GetData("SELECT * FROM dCompanies WHERE smfAutobatchEmails = 1", new List<SqlParameter>() { });
+                    bool alreadyGrab = false;
 
+                    //Create AutoBatch History
+                    //dateTimeBatch = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3];
+                    //dAutoBatchHistory(connectionString1, dateTimeBatch, 'START')
+
+                    foreach(DataRow row in dtCompanies.Rows) 
+                    {
+                        if (!String.IsNullOrEmpty(row["smfEmailEWSConnectionString"].ToString()) && (!alreadyGrab))
+                        {
+                            Console.WriteLine($"Department: {row["smfCode"]} - {row["smfCompanyName"]} - {row["smfEmailEWSConnectionString"].ToString()}");
+                        }
+                        Console.WriteLine($"Department: {row["smfCode"]} - {row["smfCompanyName"]}");
+                    }
                 }
                 else
                 {
