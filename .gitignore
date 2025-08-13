@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+
+# Optional: also ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache
+.vs/
+
+# Publish folder (optional, if you don't want to commit published files)
+**/publish/
