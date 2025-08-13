@@ -29,6 +29,7 @@ class Program
                 if (command == "Test")
                 {
                     DataTable dt = await database.GetData("SELECT * FROM dRegisteredUsers WHERE regUserID = 194", new List<SqlParameter>() { });
+                    Console.WriteLine(dt.Rows[0].ToString());
                 }
                 else
                 {
