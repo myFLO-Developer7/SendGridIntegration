@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SendGridIntegration")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aaa34a20b4d3be1cee1fb1de89b74e06bb7a9046")]
 [assembly: System.Reflection.AssemblyProductAttribute("SendGridIntegration")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SendGridIntegration")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

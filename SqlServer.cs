@@ -6,9 +6,13 @@ namespace SendGridIntegration
     internal class SqlServer
     {
         private static DbSettings _dbSettings = new DbSettings();
-        public SqlServer(){}
+        public SqlServer() { }
+        public SqlServer(DbSettings dbSettings)
+        {
+            _dbSettings = dbSettings;
+        }
 
-        public void GetDbSettings(string systemId, string wrapperDatabase)
+        public DbSettings GetDbSettingsFromWrapper(string systemId, string wrapperDatabase)
         {
             string connectionString = wrapperDatabase;
             string sqlString = "select * from dMyFloSystems where sysSystemId = @systemId";
@@ -40,7 +44,7 @@ namespace SendGridIntegration
             {
                 Environment.Exit(1); // Exit with error code
             }
-            _dbSettings = dbSettings;
+            return dbSettings;
         }
 
         public async Task<DataTable> GetData(string sqlQuery, List<SqlParameter> sqlParameters)
@@ -61,10 +65,11 @@ namespace SendGridIntegration
 
                         if (sqlParameters != null && sqlParameters.Count > 0)
                             cmd.Parameters.AddRange(sqlParameters.ToArray());
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        await con.OpenAsync();
+
+                        using (var reader = await cmd.ExecuteReaderAsync())
                         {
-                            con.Open();
-                            adapter.Fill(dt);
+                            dt.Load(reader);
                         }
                     }
                 }
