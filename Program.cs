@@ -74,15 +74,18 @@ class Program
                             companiesDbSettings.SqlServer = serverName;
                             SqlServer companiesDatabase = new SqlServer(companiesDbSettings);
                             Console.WriteLine(companiesDatabase._connectionString);
-                            //DataTable dEmailSystems = await companiesDatabase.GetData("SELECT * FROM dEmailSystems WHERE emcEWSVersion = 'SENDGRID'", new List<SqlParameter>() { });
-                            //foreach(DataRow ems in dEmailSystems.Rows)
-                            //{
-                            //    string? groupCode = ems["emcGroupCode"]?.ToString()?.TrimEnd();
-                            //    string? defaultFromName = ems["emcDefaultFromName"]?.ToString()?.TrimEnd();
-                            //    string? smfAutoBatchEmailStartDate = smf["smfAutoBatchEmailStartDate"]?.ToString()?.TrimEnd();
-                            //    int smfAutobatchEmailMaxAttempt = (int)smf["smfAutobatchEmailMaxAttempt"];
-                            //    string? attachment_foler = ems["emcAttachmentFolder"]?.ToString()?.TrimEnd();
-                            //}
+                            DataTable dEmailSystems = await companiesDatabase.GetData("SELECT * FROM dEmailSystems WHERE emcEWSVersion = 'SENDGRID'", new List<SqlParameter>() { });
+                            foreach (DataRow ems in dEmailSystems.Rows)
+                            {
+                                string? groupCode = ems["emcGroupCode"]?.ToString()?.TrimEnd();
+                                string? defaultFromName = ems["emcDefaultFromName"]?.ToString()?.TrimEnd();
+                                string? smfAutoBatchEmailStartDate = smf["smfAutoBatchEmailStartDate"]?.ToString()?.TrimEnd();
+                                int smfAutobatchEmailMaxAttempt = (int)smf["smfAutobatchEmailMaxAttempt"];
+                                string? attachment_foler = ems["emcAttachmentFolder"]?.ToString()?.TrimEnd();
+
+                                SendGridService sendGridService = new SendGridService(sendgridAPIKey);
+                                sendGridService.SendBatch(companiesDatabase, groupCode, attachment_foler, smfAutoBatchEmailStartDate, smfAutobatchEmailMaxAttempt, defaultFromName);
+                            }
                         }
                         alreadyGrab = true;
                     }
