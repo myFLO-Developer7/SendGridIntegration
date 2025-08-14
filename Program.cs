@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using SendGridIntegration;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 class Program
 {
@@ -16,6 +17,7 @@ class Program
                 .Build();
             string? dbServer = config["ConnectionStrings:WrapperDatabase"];
             string? systemId = config["ConnectionStrings:System_ID"];
+            string? sendgridAPIKey = config["SendGrid:SecretKey"];
             if (string.IsNullOrEmpty(dbServer) || string.IsNullOrEmpty(systemId))
             {
                 throw new Exception("Missing WrapperDatabase connection string or System ID in appsettings.json");
@@ -36,14 +38,60 @@ class Program
                     //dateTimeBatch = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3];
                     //dAutoBatchHistory(connectionString1, dateTimeBatch, 'START')
 
-                    foreach(DataRow row in dtCompanies.Rows) 
+                    foreach(DataRow smf in dtCompanies.Rows) 
                     {
-                        if (!String.IsNullOrEmpty(row["smfEmailEWSConnectionString"].ToString()) && (!alreadyGrab))
+                        if (!String.IsNullOrEmpty(smf["smfEmailEWSConnectionString"].ToString()) && (!alreadyGrab))
                         {
-                            Console.WriteLine($"Department: {row["smfCode"]} - {row["smfCompanyName"]} - {row["smfEmailEWSConnectionString"].ToString()}");
+                            string emailDBConn = smf["smfEmailEWSConnectionString"]?.ToString()?.TrimEnd() ?? "";
+                            string logFileDir = smf["smfEmailLogFile"]?.ToString()?.Trim() ?? "";
+
+                            // Split connection string into parts
+                            string[] emailDBConData = emailDBConn.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                            string serverName = "";
+                            string db = "";
+                            string username = "";
+                            string pw = "";
+
+                            foreach (string strConData in emailDBConData)
+                            {
+                                if (strConData.Contains("Data Source", StringComparison.OrdinalIgnoreCase))
+                                    serverName = strConData.Split('=')[1].Trim();
+
+                                if (strConData.Contains("Catalog", StringComparison.OrdinalIgnoreCase))
+                                    db = strConData.Split('=')[1].Trim();
+
+                                if (strConData.Contains("Id", StringComparison.OrdinalIgnoreCase))
+                                    username = strConData.Split('=')[1].Trim();
+
+                                if (strConData.Contains("Password", StringComparison.OrdinalIgnoreCase))
+                                    pw = strConData.Split('=')[1].Trim();
+                            }
+                            DbSettings companiesDbSettings = new DbSettings();
+                            companiesDbSettings.Database = db;
+                            companiesDbSettings.UserName = username;
+                            companiesDbSettings.Password = pw;
+                            companiesDbSettings.SqlServer = serverName;
+                            SqlServer companiesDatabase = new SqlServer(companiesDbSettings);
+                            Console.WriteLine(companiesDatabase._connectionString);
+                            //DataTable dEmailSystems = await companiesDatabase.GetData("SELECT * FROM dEmailSystems WHERE emcEWSVersion = 'SENDGRID'", new List<SqlParameter>() { });
+                            //foreach(DataRow ems in dEmailSystems.Rows)
+                            //{
+                            //    string? groupCode = ems["emcGroupCode"]?.ToString()?.TrimEnd();
+                            //    string? defaultFromName = ems["emcDefaultFromName"]?.ToString()?.TrimEnd();
+                            //    string? smfAutoBatchEmailStartDate = smf["smfAutoBatchEmailStartDate"]?.ToString()?.TrimEnd();
+                            //    int smfAutobatchEmailMaxAttempt = (int)smf["smfAutobatchEmailMaxAttempt"];
+                            //    string? attachment_foler = ems["emcAttachmentFolder"]?.ToString()?.TrimEnd();
+                            //}
                         }
-                        Console.WriteLine($"Department: {row["smfCode"]} - {row["smfCompanyName"]}");
+                        alreadyGrab = true;
                     }
+                }
+                else if(command == "SendTest")
+                {
+                    SendGridService sendGridService = new SendGridService(sendgridAPIKey);
+                    Console.WriteLine("SENDING");
+                    await sendGridService.Send();
                 }
                 else
                 {

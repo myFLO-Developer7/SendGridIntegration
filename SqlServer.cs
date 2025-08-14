@@ -6,10 +6,16 @@ namespace SendGridIntegration
     internal class SqlServer
     {
         private static DbSettings _dbSettings = new DbSettings();
+        public string _connectionString = "";
         public SqlServer() { }
         public SqlServer(DbSettings dbSettings)
         {
             _dbSettings = dbSettings;
+            string dbServer = _dbSettings.SqlServer;
+            string dbName = _dbSettings.Database;
+            string userName = _dbSettings.UserName;
+            string password = _dbSettings.Password;
+            _connectionString = $"data source={dbServer}; Initial Catalog={dbName}; uid={userName}; pwd={password};Encrypt=True;TrustServerCertificate=True;";
         }
 
         public DbSettings GetDbSettingsFromWrapper(string systemId, string wrapperDatabase)
