@@ -16,7 +16,7 @@ class Program
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
             string? dbServer = config["ConnectionStrings:WrapperDatabase"];
-            string? systemId = config["ConnectionStrings:System_ID"];
+            string? systemId = config["ConnectionStrings:System_ID"]; // INPUT!!!!!!!!!!!!!
             string? sendgridAPIKey = config["SendGrid:SecretKey"];
             if (string.IsNullOrEmpty(dbServer) || string.IsNullOrEmpty(systemId))
             {
@@ -84,7 +84,7 @@ class Program
                                 string? attachment_foler = ems["emcAttachmentFolder"]?.ToString()?.TrimEnd();
 
                                 SendGridService sendGridService = new SendGridService(sendgridAPIKey);
-                                sendGridService.SendBatch(companiesDatabase, groupCode, attachment_foler, smfAutoBatchEmailStartDate, smfAutobatchEmailMaxAttempt, defaultFromName);
+                                await sendGridService.SendBatch(companiesDatabase, groupCode, attachment_foler, smfAutoBatchEmailStartDate, smfAutobatchEmailMaxAttempt, defaultFromName);
                             }
                         }
                         alreadyGrab = true;
