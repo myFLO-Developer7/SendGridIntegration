@@ -24,7 +24,7 @@ namespace SendGridIntegration
             {
                 var client = new SendGridClient(sendgridAPIKey);
                 var from = new EmailAddress("Bradfordenergy@appmail.csr.com.au", "Bradfordenergy");
-                var subject = "[TEST] Email from SendGrid";
+                var subject = "[TEST] Email from MYFLO";
                 var to = new EmailAddress("kennethbalane.main@gmail.com", "Kenneth Balane");
                 var plainTextContent = "HELLO, TEST EMAIL FROM MYFLO";
                 var htmlContent = "<strong>HELLO, TEST EMAIL FROM MYFLO</strong>";
@@ -36,7 +36,6 @@ namespace SendGridIntegration
             catch (Exception ex) { 
                 Console.WriteLine(ex.Message );
             }
-            
         }
 
         public async Task SendBatch(SqlServer emailServer, string groupCode, string attachmentFolder, string smfAutoBatchEmailStartDate, int smfAutobatchEmailMaxAttempt, string fromEmail)
